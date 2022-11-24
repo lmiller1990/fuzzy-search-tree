@@ -2,22 +2,25 @@
 import { deriveTree, DirectoryNode, getPath } from "@fuzzy-treeview/core";
 import { computed, ComputedRef, ref } from "vue";
 import Directory from "./Directory.vue";
-import DirStub from "./DirStub.vue";
+import DirectoryStub from "./DirectoryStub.vue";
 import FileStub from "./FileStub.vue";
 
 const props = defineProps<{
   files: string[];
-  UserDirectory: typeof DirStub;
-  UserFile: typeof FileStub;
+  search: string;
+  components: {
+    directory: typeof DirectoryStub;
+    file: typeof FileStub;
+  }
 }>();
 
 const collapsed = ref(new Set<string>());
 const tree: ComputedRef<DirectoryNode> = computed(() =>
-  deriveTree(props.files, { collapsed: collapsed.value, search: "f" })
+  deriveTree(props.files, { collapsed: collapsed.value, search: props.search })
 );
 
 const handleCollapse = (folder: DirectoryNode) => {
-  console.log(folder)
+  console.log(folder);
   const rel = getPath(folder.relative);
   const c = new Set([...collapsed.value]);
   if (c.has(rel)) {
@@ -33,12 +36,11 @@ const handleCollapse = (folder: DirectoryNode) => {
   <div>
     <Directory
       v-for="directory of tree.directories"
-      :UserDirectory="props.UserDirectory"
-      :UserFile="props.UserFile"
+      :components="props.components"
       :directory="directory"
-      @collapse="node => handleCollapse(node)"
+      @collapse="(node) => handleCollapse(node)"
     >
-      <component :is="props.UserDirectory" :directory="directory" />
+      <component :is="props.components.directory" :directory="directory" />
     </Directory>
   </div>
 </template>

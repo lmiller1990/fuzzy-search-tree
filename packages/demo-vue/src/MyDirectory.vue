@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { DirectoryNode } from "@fuzzy-treeview/core";
 import { computed } from "vue";
+import HighlightedText from "./HighlightedText.vue";
 
 const props = defineProps<{
   directory: DirectoryNode;
@@ -19,9 +20,9 @@ const displayName = computed(() => {
 
 <template>
   <div :style="{ marginLeft: `${props.directory.depth * 10}px` }">
-    <template v-for="{ char, highlight } of displayName">
-      <span class="font-bold" v-if="highlight">{{ char }}</span>
-      <span v-else>{{ char }}</span>
-    </template>
+    <HighlightedText
+      :text="props.directory.displayName"
+      :indexes="props.directory.highlight"
+    />
   </div>
 </template>

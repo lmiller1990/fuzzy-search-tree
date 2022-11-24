@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import { DirectoryNode } from "@fuzzy-treeview/core";
-import { computed } from "vue";
-import File from "./File.vue";
+import DirectoryStub from "./DirectoryStub.vue";
+import FileStub from "./FileStub.vue";
 
 const props = defineProps<{
   directory: DirectoryNode;
-  UserDirectory: any;
-  UserFile: any;
+  components: {
+    directory: typeof DirectoryStub;
+    file: typeof FileStub;
+  }
 }>();
 
 const emit = defineEmits<{
@@ -22,18 +24,17 @@ const emit = defineEmits<{
   <template v-if="props.directory.expanded" >
     <Directory
       v-for="directory of props.directory.directories"
-      :UserDirectory="props.UserDirectory"
-      :UserFile="props.UserFile"
+      :components="props.components"
       :directory="directory"
       @collapse="(dir: DirectoryNode) => emit('collapse', dir)"
     >
-      <component :is="props.UserDirectory" :directory="directory" />
+      <component :is="props.components.directory" :directory="directory" />
     </Directory>
   </template>
 
   <template v-if="props.directory.expanded">
     <component
-      :is="props.UserFile"
+      :is="props.components.file"
       v-for="file of props.directory.files"
       :file="file"
     />

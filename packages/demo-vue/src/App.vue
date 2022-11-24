@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { deriveTree } from "@fuzzy-treeview/core";
-import type { TreeOptions } from "@fuzzy-treeview/core";
+import { ref } from "vue";
 import TreeView from "./TreeView.vue";
-import File from "./MyFile.vue";
-import Directory from "./MyDirectory.vue";
+import file from "./MyFile.vue";
+import directory from "./MyDirectory.vue";
 
 const files = [
   "foo/bar/merp.js",
@@ -14,18 +12,16 @@ const files = [
 ];
 
 const search = ref("");
-const collapsed = ref(new Set<string>());
-const tree = computed(() => deriveTree(files, { collapsed: collapsed.value }));
-const options: TreeOptions = {
-  search: ''
-}
 </script>
 
 <template>
+  <input v-model="search" placeholder="Search..." />
   <TreeView
     :files="files"
-    :options="options"
-    :UserDirectory="Directory"
-    :UserFile="File"
+    :search="search"
+    :components="{
+      file,
+      directory
+    }"
   />
 </template>
