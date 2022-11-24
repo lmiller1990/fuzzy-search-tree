@@ -1,4 +1,4 @@
-import { fuzzysort } from "./fuzzysort";
+import { fuzzysort } from "./fuzzysort.js";
 
 interface Entry {
   name: string;
@@ -10,13 +10,14 @@ interface Entry {
     name: string;
     relative: string;
     indexes: number[];
-  }>;
+  }>
 }
 
 export interface Item {
   displayName: string;
   highlight: number[];
   relative: string;
+  depth: number;
 }
 
 export type FileNode = Item;
@@ -26,6 +27,7 @@ interface InternalDirectoryNode extends Item {
   files: Item[];
   parent?: InternalDirectoryNode;
   expanded: boolean;
+  depth: number;
 }
 
 export type DirectoryNode = Omit<InternalDirectoryNode, "parent">;
@@ -170,12 +172,12 @@ function sortByRelative<T extends { relative: string }>(x: T, y: T): -1 | 1 {
   return x.relative.split("/").length < y.relative.split("/").length ? -1 : 1;
 }
 
-interface TreeOptions {
+export type TreeOptions = Partial<{
   search: string;
   collapsed: Set<string>;
-}
+}>
 
-export function deriveTree(files: string[], options: Partial<TreeOptions> = {}): DirectoryNode {
+export function deriveTree(files: string[], options: TreeOptions = {}): DirectoryNode {
   const filtered: FuzzyFile[] = (options.search ? fuzzysort(options.search, files) : files)
     .map((x) => ({
       indexes: (x as any).indexes ?? [],
@@ -202,6 +204,7 @@ export function deriveTree(files: string[], options: Partial<TreeOptions> = {}):
     displayName: "/",
     expanded: true,
     parent: undefined,
+    depth: 0,
     highlight: [],
     relative: "/",
     files: [],
@@ -210,22 +213,36 @@ export function deriveTree(files: string[], options: Partial<TreeOptions> = {}):
 
   const dirmap = new Map<string, InternalDirectoryNode>();
 
+  function getDepth(n: InternalDirectoryNode) {
+    // We start at -1 since node.parent is always defined at least once,
+    // since even the top level nodes have `root` as their parent.
+    let i = 0;
+    let node: InternalDirectoryNode | null = n;
+    while ((node = node?.parent ?? null)) {
+      i++;
+    }
+    return i;
+  }
+
   for (const entry of entries) {
     const parent =
       entry.relative === entry.name ? root : dirmap.get(entry.parent)!;
 
+      const depth = getDepth(parent);
     dirmap.set(entry.relative, {
       expanded: !options.collapsed?.has(getPath(entry.originalRelative)),
       displayName: entry.name,
       parent,
       highlight: entry.indexes,
       relative: entry.originalRelative,
+      depth,
       files: entry.files
         .map((x) => {
           return {
             relative: x.relative,
             displayName: x.name,
             highlight: x.indexes,
+            depth,
           };
         })
         .sort((x, y) => {

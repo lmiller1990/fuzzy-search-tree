@@ -1,0 +1,26 @@
+{
+  "name": "@fuzzy-treeview/core",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmiller1990/fuzzy-search-tree.git"
+  },
+  "main": "./dist/tree.js",
+  "types": "dist/tree.d.ts",
+  "author": "Lachlan Miller",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lmiller1990/fuzzy-search-tree/issues"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "homepage": "https://github.com/lmiller1990/fuzzy-search-tree#readme",
+  "devDependencies": {
+    "typescript": "4.9.3",
+    "ts-node": "10.9.1",
+    "vitest": "0.25.3"
+  }
+}

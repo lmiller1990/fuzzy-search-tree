@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { DirectoryNode, FileNode, getPath } from "./tree";
-import { deriveTree } from "./tree";
+import React, { useState } from "react";
+import type { DirectoryNode, FileNode } from "@fuzzy-treeview/core";
+import { getPath, deriveTree } from "@fuzzy-treeview/core";
 
 const indent = 15;
 

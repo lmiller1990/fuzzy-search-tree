@@ -1,6 +1,6 @@
 // https://github.com/farzher/fuzzysort v2.0.3
 
-import { FastPriorityQueue } from "./fpq";
+import { FastPriorityQueue } from "./fpq.js";
 
 interface InternalFuzzyResult {
   target: string;
